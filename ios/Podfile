@@ -12,15 +12,6 @@ install! 'cocoapods', :deterministic_uuids => false
 target 'CICD' do
   config = use_native_modules!
 
-  pod 'FirebaseCoreInternal', :modular_headers => true
-  pod 'FirebaseSessions', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
-  pod 'FirebaseCore', :modular_headers => true
-  pod 'FirebaseCoreExtension', :modular_headers => true
-  pod 'FirebaseInstallations', :modular_headers => true
-  pod 'GoogleDataTransport', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
-  pod 'nanopb', :modular_headers => true
 
   # Flags change depending on the env values.
   flags = get_default_flags()
