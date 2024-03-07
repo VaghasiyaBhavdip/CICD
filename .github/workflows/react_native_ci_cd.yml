@@ -31,18 +31,31 @@ jobs:
       - name: Run tests
         run: |
           npm test
+
       - name: Set execute permission for gradlew
         run: |
           chmod +x android/gradlew
 
-      - name: Build APK for Android
+      - name: Build Debug APK for Android
+        run: |
+          npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Upload Debug APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: debug
+          path: android/app/build/outputs/apk/debug/*.apk
+
+      - name: Build Release AAB for Android
         run: |
           npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
           cd android
-          ./gradlew assembleRelease
+          ./gradlew bundleRelease
 
-      - name: Upload APK artifact
+      - name: Upload Release AAB artifact
         uses: actions/upload-artifact@v2
         with:
           name: release
-          path: android/app/build/outputs/apk/release/*.apk
+          path: android/app/build/outputs/bundle/release/*.aab
