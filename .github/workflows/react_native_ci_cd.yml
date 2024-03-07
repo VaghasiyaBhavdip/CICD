@@ -54,6 +54,23 @@ jobs:
           echo "Installing CocoaPods..."
           sudo gem install cocoapods
           cd ios
+          pod init
+          cat <<EOF >>Podfile
+          platform :ios, '12.0'
+          use_native_modules!
+          pod 'React', :path => '../node_modules/react-native', :subspecs => [
+            'Core',
+            'CxxBridge',
+            'DevSupport',
+            'RCTText',
+            'RCTNetwork',
+            'RCTWebSocket',
+            'RCTAnimation',
+            'RCTLinkingIOS',
+            # Add any other subspecs you want to use in your project
+          ]
+          # Add other pods for your project
+          EOF
           pod install
 
       - name: Create IPA
