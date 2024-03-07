@@ -50,7 +50,7 @@ jobs:
           echo "    'RCTWebSocket'," >> Podfile
           echo "    'RCTAnimation'," >> Podfile
           echo "    'RCTLinkingIOS'," >> Podfile
-          echo "  ]" >> Podfile
+          echo "  ], :inhibit_warnings => true" >> Podfile
           echo "end" >> Podfile
           # Add other pods as needed
           pod install
