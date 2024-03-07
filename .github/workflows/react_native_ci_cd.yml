@@ -41,16 +41,20 @@ jobs:
           echo "platform :ios, '12.0'" > Podfile
           echo "use_modular_headers!" >> Podfile
           echo "target 'CICD' do" >> Podfile
-          echo "  pod 'React', :path => '../node_modules/react-native', :subspecs => [" >> Podfile
-          echo "    'Core'," >> Podfile
-          echo "    'CxxBridge'," >> Podfile
-          echo "    'DevSupport'," >> Podfile
-          echo "    'RCTText'," >> Podfile
-          echo "    'RCTNetwork'," >> Podfile
-          echo "    'RCTWebSocket'," >> Podfile
-          echo "    'RCTAnimation'," >> Podfile
-          echo "    'RCTLinkingIOS'," >> Podfile
-          echo "  ], :inhibit_warnings => true" >> Podfile
+          echo "  pod 'React', :path => '../node_modules/react-native'" >> Podfile
+          echo "  pod 'React-Core', :path => '../node_modules/react-native/React/Core'" >> Podfile
+          echo "  pod 'React-CxxBridge', :path => '../node_modules/react-native/ReactCommon/cxxreact'" >> Podfile
+          echo "  pod 'React-DevSupport', :path => '../node_modules/react-native/React/DevSupport'" >> Podfile
+          echo "  pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'" >> Podfile
+          echo "  pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'" >> Podfile
+          echo "  pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'" >> Podfile
+          echo "  pod 'React-RCTImage', :path => '../node_modules/react-native/Libraries/Image'" >> Podfile
+          echo "  pod 'React-RCTLinkingIOS', :path => '../node_modules/react-native/Libraries/LinkingIOS'" >> Podfile
+          echo "  pod 'React-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network'" >> Podfile
+          echo "  pod 'React-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings'" >> Podfile
+          echo "  pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text'" >> Podfile
+          echo "  pod 'React-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'" >> Podfile
+          echo "  pod 'React-RCTWebSocket', :path => '../node_modules/react-native/Libraries/WebSocket'" >> Podfile
           echo "end" >> Podfile
           # Add other pods as needed
           pod install
