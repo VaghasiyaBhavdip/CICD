@@ -49,5 +49,6 @@ target 'CICD' do
 
   # Remove the duplicate React-Core pod
   pod 'React-Core', :path => '../node_modules/react-native/React/Core'
+  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/React/Core/DevSupport', :inhibit_warnings => true
 
 end
