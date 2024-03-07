@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  android-build-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,9 +28,9 @@ jobs:
         run: |
           npm install
 
-      - name: Run Android tests
+      - name: Run tests
         run: |
-          npm run android:test
+          npm test
 
       - name: Set execute permission for gradlew
         run: |
@@ -42,75 +42,46 @@ jobs:
           cd android
           ./gradlew assembleDebug
 
-      - name: Upload Debug APK artifact
+      - name: Upload Debug APK artifact for Android
         uses: actions/upload-artifact@v2
         with:
-          name: android-debug
+          name: debug-android
           path: android/app/build/outputs/apk/debug/*.apk
 
-  ios-build-test:
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install CocoaPods
+      - name: Build Debug IPA for iOS
         run: |
-          sudo gem install cocoapods
+          npx react-native bundle --platform ios --dev true --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios
           cd ios
-          pod install
-          cd ..
+          xcodebuild -workspace YourProject.xcworkspace -scheme YourProject -configuration Debug -sdk iphoneos clean archive -archivePath build/YourProject
+          xcodebuild -exportArchive -archivePath "build/YourProject.xcarchive" -exportPath "build" -exportOptionsPlist "ExportOptions.plist"
 
-      - name: Run iOS tests
-        run: |
-          npm run ios:test
-
-      - name: Build iOS app
-        run: |
-          npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios
-          xcodebuild -workspace ios/YourApp.xcworkspace -scheme YourApp -configuration Release -destination generic/platform=iOS -archivePath build/YourApp.xcarchive archive
-
-      - name: Export iOS IPA
-        run: |
-          xcodebuild -exportArchive -archivePath build/YourApp.xcarchive -exportOptionsPlist ios/ExportOptions.plist -exportPath build
-
-      - name: Upload iOS IPA artifact
+      - name: Upload Debug IPA artifact for iOS
         uses: actions/upload-artifact@v2
         with:
-          name: ios-release
-          path: build/*.ipa
+          name: debug-ios
+          path: ios/build/*.ipa
 
-# Combine both Android and iOS jobs into a single workflow
-jobs:
-  build-and-test:
-    runs-on: [ubuntu-latest, macos-latest]
-    name: Build and Test Android and iOS
+      - name: Build Release AAB for Android
+        run: |
+          npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          cd android
+          ./gradlew bundleRelease
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Upload Release AAB artifact for Android
+        uses: actions/upload-artifact@v2
         with:
-          node-version: '18'
+          name: release-android
+          path: android/app/build/outputs/bundle/release/*.aab
 
-      - name: Install dependencies
+      - name: Build Release IPA for iOS
         run: |
-          npm install
+          npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios
+          cd ios
+          xcodebuild -workspace YourProject.xcworkspace -scheme YourProject -configuration Release -sdk iphoneos clean archive -archivePath build/YourProject
+          xcodebuild -exportArchive -archivePath "build/YourProject.xcarchive" -exportPath "build" -exportOptionsPlist "ExportOptions.plist"
 
-      - name: Run Tests
-        run: |
-          npm test
-
-      - name: Build and Test Android
-        uses: ./.github/workflows/android-build-test.yml
-
-      - name: Build and Test iOS
-        uses: ./.github/workflows/ios-build-test.yml
+      - name: Upload Release IPA artifact for iOS
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-ios
+          path: ios/build/*.ipa
