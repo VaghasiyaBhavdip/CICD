@@ -12,6 +12,9 @@ install! 'cocoapods', :deterministic_uuids => false
 target 'CICD' do
   config = use_native_modules!
 
+  # Add the correct entry for React-Core
+  pod 'React-Core', :path => '../node_modules/react-native/React/Core', :inhibit_warnings => true
+
 
   # Flags change depending on the env values.
   flags = get_default_flags()
