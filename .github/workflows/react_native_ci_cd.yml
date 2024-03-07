@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # Set the runner to macOS
 
     steps:
       - name: Checkout code
@@ -48,10 +48,15 @@ jobs:
       - name: Create IPA
         run: |
           echo "Creating IPA..."
-          echo "Build the project using Xcode"
-          xcodebuild -workspace CICD.xcworkspace -scheme CICD -configuration Debug -destination generic/platform=iOS build CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE=
-          xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd
-          mv build/cicd/*.ipa debug-ios.ipa
+          echo "Build the project using Xcode or run a script"
+          echo "For example, you can create a simple script like 'build_ipa.sh' in the ios folder"
+          echo "Contents of 'build_ipa.sh':"
+          echo "#!/bin/bash"
+          echo "xcodebuild -workspace CICD.xcworkspace -scheme CICD -configuration Debug -destination 'generic/platform=iOS' archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE="
+          echo "xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd"
+          echo "mv build/cicd/*.ipa ../debug-ios.ipa"
+          echo "chmod +x build_ipa.sh"
+          echo "./build_ipa.sh"
 
       - name: Upload Debug IPA artifact
         uses: actions/upload-artifact@v2
