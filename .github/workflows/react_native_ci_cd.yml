@@ -43,8 +43,7 @@ jobs:
           echo "target 'CICD' do" >> Podfile
           echo "  pod 'React', :path => '../node_modules/react-native'" >> Podfile
           echo "  pod 'React-Core', :path => '../node_modules/react-native/React/Core'" >> Podfile
-          echo "  pod 'React-CxxBridge', :path => '../node_modules/react-native/ReactCommon/cxxreact'" >> Podfile
-          echo "  pod 'React-DevSupport', :path => '../node_modules/react-native/React/DevSupport'" >> Podfile
+          echo "  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/React/Core/DevSupport'" >> Podfile
           echo "  pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'" >> Podfile
           echo "  pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'" >> Podfile
           echo "  pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'" >> Podfile
