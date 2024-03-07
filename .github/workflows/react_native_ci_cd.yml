@@ -32,21 +32,21 @@ jobs:
         run: |
           npm test
 
-      - name: Set execute permission for gradlew
-        run: |
-          chmod +x android/gradlew
+      # - name: Set execute permission for gradlew
+      #   run: |
+      #     chmod +x android/gradlew
 
-      - name: Build Debug APK for Android
-        run: |
-          npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
-          cd android
-          ./gradlew assembleDebug
+      # - name: Build Debug APK for Android
+      #   run: |
+      #     npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+      #     cd android
+      #     ./gradlew assembleDebug
 
-      - name: Upload Debug APK artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: debug-android
-          path: android/app/build/outputs/apk/debug/*.apk
+      # - name: Upload Debug APK artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: debug-android
+      #     path: android/app/build/outputs/apk/debug/*.apk
 
       - name: Prepare for iOS Build
         run: |
@@ -54,23 +54,6 @@ jobs:
           echo "Installing CocoaPods..."
           sudo gem install cocoapods
           cd ios
-          pod init
-          cat <<EOF >>Podfile
-          platform :ios, '12.0'
-          use_native_modules!
-          pod 'React', :path => '../node_modules/react-native', :subspecs => [
-            'Core',
-            'CxxBridge',
-            'DevSupport',
-            'RCTText',
-            'RCTNetwork',
-            'RCTWebSocket',
-            'RCTAnimation',
-            'RCTLinkingIOS',
-            # Add any other subspecs you want to use in your project
-          ]
-          # Add other pods for your project
-          EOF
           pod install
 
       - name: Create IPA
