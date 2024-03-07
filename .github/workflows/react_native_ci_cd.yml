@@ -25,6 +25,9 @@ jobs:
       - name: Run tests
         run: |
           npm test
+       name: Set execute permission for gradlew
+        run: |
+          chmod +x android/gradlew
 
       - name: Build APK for Android
         run: |
