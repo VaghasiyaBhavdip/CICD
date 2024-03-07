@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '18'
 
       - name: Set up Java JDK
         uses: actions/setup-java@v2
@@ -50,17 +50,27 @@ jobs:
 
       - name: Prepare for iOS Build
         run: |
-          echo "Prepare for iOS Build"
+          echo "Preparing for iOS Build..."
+          echo "Installing CocoaPods..."
+          sudo gem install cocoapods
+          cd ios
+          pod install
 
-      - name: Upload iOS Build Configuration
+      - name: Create IPA
+        run: |
+          echo "Creating IPA..."
+          echo "Build the project using Xcode or run a script"
+          echo "For example, you can create a simple script like 'build_ipa.sh' in the ios folder"
+          echo "Contents of 'build_ipa.sh':"
+          echo "#!/bin/bash"
+          echo "xcodebuild -workspace cicd.xcworkspace -scheme cicd -configuration Debug -destination 'generic/platform=iOS' archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE="
+          echo "xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd"
+          echo "mv build/cicd/*.ipa ../debug-ios.ipa"
+          echo "chmod +x build_ipa.sh"
+          echo "./build_ipa.sh"
+
+      - name: Upload Debug IPA artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ios-build-config
-          path: ios
-
-      - name: Upload Debug IPA Template
-        uses: actions/upload-artifact@v2
-        with:
-          name: debug-ios-template
-          path: .github/workflows/debug-ios-template
-
+          name: debug-ios
+          path: debug-ios.ipa
