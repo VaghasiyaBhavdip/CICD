@@ -16,6 +16,7 @@ platform :ios, '12.0'  # Set the minimum iOS version supported
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
+
 flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 target 'CICD' do
@@ -45,4 +46,8 @@ target 'CICD' do
       :mac_catalyst_enabled => false
     )
   end
+
+  # Remove the duplicate React-Core pod
+  pod 'React-Core', :path => '../node_modules/react-native/React/Core'
+
 end
