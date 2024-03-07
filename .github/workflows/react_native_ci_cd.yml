@@ -40,7 +40,6 @@ jobs:
           cd ios
           echo "platform :ios, '12.0'" > Podfile
           echo "use_modular_headers!" >> Podfile
-          echo "use_native_modules!" >> Podfile
           echo "pod 'React', :path => '../node_modules/react-native', :subspecs => [" >> Podfile
           echo "  'Core'," >> Podfile
           echo "  'CxxBridge'," >> Podfile
