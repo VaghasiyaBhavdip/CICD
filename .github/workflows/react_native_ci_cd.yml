@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Update to Node.js 20
+          node-version: '18'
 
       - name: Set up Java JDK
         uses: actions/setup-java@v2
@@ -32,34 +32,30 @@ jobs:
         run: |
           npm test
 
-      - name: Prepare for iOS Build
+      - name: Set execute permission for gradlew
         run: |
-          echo "Preparing for iOS Build..."
-          echo "Installing CocoaPods..."
-          sudo gem install cocoapods
-          cd ios
-          echo "platform :ios, '12.0'" > Podfile
-          echo "use_modular_headers!" >> Podfile
-          echo "target 'CICD' do" >> Podfile
-          echo "end" >> Podfile
-          # Add other pods as needed
-          pod install
+          chmod +x android/gradlew
 
-      - name: Create IPA
+      - name: Build Debug APK for Android
         run: |
-          echo "Creating IPA..."
-          echo "Build the project using Xcode or run a script"
-          echo "For example, you can create a simple script like 'build_ipa.sh' in the ios folder"
-          echo "Contents of 'build_ipa.sh':"
-          echo "#!/bin/bash"
-          echo "xcodebuild -workspace CICD.xcworkspace -scheme CICD -configuration Debug -destination 'generic/platform=iOS' archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE="
-          echo "xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd"
-          echo "mv build/cicd/*.ipa ../debug-ios.ipa"
-          echo "chmod +x build_ipa.sh"
-          echo "./build_ipa.sh"
+          npx react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          cd android
+          ./gradlew assembleDebug
 
-      - name: Upload Debug IPA artifact
+      - name: Upload Debug APK artifact
         uses: actions/upload-artifact@v2
         with:
-          name: debug-ios
-          path: debug-ios.ipa  # Update the path to the correct location of the IPA file
+          name: debug
+          path: android/app/build/outputs/apk/debug/*.apk
+
+      - name: Build Release AAB for Android
+        run: |
+          npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          cd android
+          ./gradlew bundleRelease
+
+      - name: Upload Release AAB artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: android/app/build/outputs/bundle/release/*.aab
