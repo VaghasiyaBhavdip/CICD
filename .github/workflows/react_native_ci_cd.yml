@@ -1,35 +1,79 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p',
-  'require.resolve(
-    "react-native/scripts/react_native_pods.rb",
-    {paths: [process.argv[1]]},
-  )', __dir__]).strip
+name: React Native CI/CD
 
-platform :ios, '12.0'
+on:
+  push:
+    branches:
+      - main
 
-use_modular_headers!
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-target 'CICD' do
-  config = use_native_modules!
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  use_react_native!(
-    :path => config[:reactNativePath],
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
-    # :flipper => {:config => {:script_phase => true, :use_flipper! => true}}
-    :flipper => config[:flipper],
-    # An absolute path to your application root.
-    :path => "#{Pod::Config.instance.installation_root}/.."
-  )
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-  target 'CICDTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
+      - name: Set up Java JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
 
-  post_install do |installer|
-    react_native_post_install(installer)
-  end
-end
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run tests
+        run: |
+          npm test
+
+      - name: Prepare for iOS Build
+        run: |
+          echo "Preparing for iOS Build..."
+          echo "Installing CocoaPods..."
+          sudo gem install cocoapods
+          cd ios
+          echo "platform :ios, '12.0'" > Podfile
+          echo "use_modular_headers!" >> Podfile
+          echo "target 'CICD' do" >> Podfile
+          echo "  pod 'React', :path => '../node_modules/react-native'" >> Podfile
+          echo "  pod 'React-Core', :path => '../node_modules/react-native/React/Core'" >> Podfile
+          echo "  pod 'React-CxxBridge', :path => '../node_modules/react-native/ReactCommon/cxxreact'" >> Podfile
+          echo "  pod 'React-DevSupport', :path => '../node_modules/react-native/React/DevSupport'" >> Podfile
+          echo "  pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'" >> Podfile
+          echo "  pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'" >> Podfile
+          echo "  pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'" >> Podfile
+          echo "  pod 'React-RCTImage', :path => '../node_modules/react-native/Libraries/Image'" >> Podfile
+          echo "  pod 'React-RCTLinkingIOS', :path => '../node_modules/react-native/Libraries/LinkingIOS'" >> Podfile
+          echo "  pod 'React-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network'" >> Podfile
+          echo "  pod 'React-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings'" >> Podfile
+          echo "  pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text'" >> Podfile
+          echo "  pod 'React-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'" >> Podfile
+          echo "  pod 'React-RCTWebSocket', :path => '../node_modules/react-native/Libraries/WebSocket'" >> Podfile
+          echo "end" >> Podfile
+          # Add other pods as needed
+          pod install
+
+      - name: Create IPA
+        run: |
+          echo "Creating IPA..."
+          echo "Build the project using Xcode or run a script"
+          echo "For example, you can create a simple script like 'build_ipa.sh' in the ios folder"
+          echo "Contents of 'build_ipa.sh':"
+          echo "#!/bin/bash"
+          echo "xcodebuild -workspace CICD.xcworkspace -scheme CICD -configuration Debug -destination 'generic/platform=iOS' archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE="
+          echo "xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd"
+          echo "mv build/cicd/*.ipa ../debug-ios.ipa"
+          echo "chmod +x build_ipa.sh"
+          echo "./build_ipa.sh"
+
+      - name: Upload Debug IPA artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: debug-ios
+          path: debug-ios.ipa
