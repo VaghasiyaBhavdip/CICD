@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '14'
 
       - name: Set up Java JDK
         uses: actions/setup-java@v2
@@ -48,18 +48,27 @@ jobs:
           name: debug-android
           path: android/app/build/outputs/apk/debug/*.apk
 
-      - name: Install CocoaPods
+      - name: Set up Xcode tools
+        uses: r0man/xcode@v2
+
+      - name: Checkout code for iOS
+        uses: actions/checkout@v2
+        with:
+          repository: 'path/to/your/ios/project'  # Update with your iOS project repository
+
+      - name: Set up CocoaPods
         run: |
-          sudo gem install cocoapods
-          pod setup
+          cd ios
+          gem install cocoapods
+          pod install
+          pod deintegrate
+          pod install
 
       - name: Build Debug IPA for iOS
         run: |
-          cd ios
-          pod install
-          xcodebuild -workspace YourProjectName.xcworkspace -scheme YourScheme -destination generic/platform=iOS -configuration Debug clean archive -archivePath build/YourProjectName.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE= || true
-          xcodebuild -exportArchive -archivePath build/YourProjectName.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/YourProjectName
-          mv build/YourProjectName/*.ipa ../debug-ios.ipa
+          xcodebuild -workspace cicd.xcworkspace -scheme cicd -destination generic/platform=iOS -configuration Debug clean archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE= || true
+          xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd
+          mv build/cicd/*.ipa ../debug-ios.ipa
 
       - name: Upload Debug IPA artifact
         uses: actions/upload-artifact@v2
