@@ -40,7 +40,7 @@ jobs:
           cd ios
           echo "platform :ios, '12.0'" > Podfile
           echo "use_modular_headers!" >> Podfile
-          echo "target 'cicd' do" >> Podfile
+          echo "target 'CICD' do" >> Podfile
           echo "  pod 'React', :path => '../node_modules/react-native', :subspecs => [" >> Podfile
           echo "    'Core'," >> Podfile
           echo "    'CxxBridge'," >> Podfile
@@ -62,7 +62,7 @@ jobs:
           echo "For example, you can create a simple script like 'build_ipa.sh' in the ios folder"
           echo "Contents of 'build_ipa.sh':"
           echo "#!/bin/bash"
-          echo "xcodebuild -workspace cicd.xcworkspace -scheme cicd -configuration Debug -destination 'generic/platform=iOS' archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE="
+          echo "xcodebuild -workspace CICD.xcworkspace -scheme CICD -configuration Debug -destination 'generic/platform=iOS' archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE="
           echo "xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd"
           echo "mv build/cicd/*.ipa ../debug-ios.ipa"
           echo "chmod +x build_ipa.sh"
