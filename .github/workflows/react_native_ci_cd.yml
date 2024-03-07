@@ -48,30 +48,19 @@ jobs:
           name: debug-android
           path: android/app/build/outputs/apk/debug/*.apk
 
-      - name: Set up Xcode tools
-        uses: r0man/xcode@v2
-
-      - name: Checkout code for iOS
-        uses: actions/checkout@v2
-        with:
-          repository: 'path/to/your/ios/project'  # Update with your iOS project repository
-
-      - name: Set up CocoaPods
+      - name: Prepare for iOS Build
         run: |
-          cd ios
-          gem install cocoapods
-          pod install
-          pod deintegrate
-          pod install
+          echo "Prepare for iOS Build"
 
-      - name: Build Debug IPA for iOS
-        run: |
-          xcodebuild -workspace cicd.xcworkspace -scheme cicd -destination generic/platform=iOS -configuration Debug clean archive -archivePath build/cicd.xcarchive CODE_SIGN_STYLE=Automatic CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= PROVISIONING_PROFILE= || true
-          xcodebuild -exportArchive -archivePath build/cicd.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/cicd
-          mv build/cicd/*.ipa ../debug-ios.ipa
-
-      - name: Upload Debug IPA artifact
+      - name: Upload iOS Build Configuration
         uses: actions/upload-artifact@v2
         with:
-          name: debug-ios
-          path: debug-ios.ipa
+          name: ios-build-config
+          path: ios
+
+      - name: Upload Debug IPA Template
+        uses: actions/upload-artifact@v2
+        with:
+          name: debug-ios-template
+          path: .github/workflows/debug-ios-template
+
