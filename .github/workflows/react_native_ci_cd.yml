@@ -62,4 +62,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: debug-ios
-          path: debug-ios.ipa
+          path: ios/debug-ios.ipa  # Specify the correct path to the IPA file
