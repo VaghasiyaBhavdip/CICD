@@ -40,16 +40,18 @@ jobs:
           cd ios
           echo "platform :ios, '12.0'" > Podfile
           echo "use_modular_headers!" >> Podfile
-          echo "pod 'React', :path => '../node_modules/react-native', :subspecs => [" >> Podfile
-          echo "  'Core'," >> Podfile
-          echo "  'CxxBridge'," >> Podfile
-          echo "  'DevSupport'," >> Podfile
-          echo "  'RCTText'," >> Podfile
-          echo "  'RCTNetwork'," >> Podfile
-          echo "  'RCTWebSocket'," >> Podfile
-          echo "  'RCTAnimation'," >> Podfile
-          echo "  'RCTLinkingIOS'," >> Podfile
-          echo "]" >> Podfile
+          echo "target 'cicd' do" >> Podfile
+          echo "  pod 'React', :path => '../node_modules/react-native', :subspecs => [" >> Podfile
+          echo "    'Core'," >> Podfile
+          echo "    'CxxBridge'," >> Podfile
+          echo "    'DevSupport'," >> Podfile
+          echo "    'RCTText'," >> Podfile
+          echo "    'RCTNetwork'," >> Podfile
+          echo "    'RCTWebSocket'," >> Podfile
+          echo "    'RCTAnimation'," >> Podfile
+          echo "    'RCTLinkingIOS'," >> Podfile
+          echo "  ]" >> Podfile
+          echo "end" >> Podfile
           # Add other pods as needed
           pod install
 
