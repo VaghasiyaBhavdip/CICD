@@ -45,20 +45,11 @@ jobs:
 
       - name: Generate AAB (Deployment branch)
         if: github.ref == 'refs/heads/Deployment'
-        run: |
-          cd android
-          chmod +x ./gradlew
-          ./gradlew bundleRelease
+        run: ./generate-aab.sh
 
-      - name: Archive artifacts
-        if: github.ref == 'refs/heads/Bhavdip_Dev' || github.ref == 'refs/heads/Production'
+      - name: Archive AAB artifact
+        if: github.ref == 'refs/heads/Bhavdip_Dev' || github.ref == 'refs/heads/Production' || github.ref == 'refs/heads/Deployment'
         uses: actions/upload-artifact@v2
         with:
           name: android-artifacts
-          path: android/app/build/outputs/
-
-      - name: Deploy to Google Play Store (AAB)
-        if: github.ref == 'refs/heads/Deployment'
-        # Here you would have your script to upload the AAB to the Play Store
-        # Replace the placeholder with your actual deployment script
-        run: ./scripts/deploy-to-playstore.sh
+          path: android/app/build/outputs/bundle/release/app-release.aab
