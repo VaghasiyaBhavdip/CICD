@@ -28,13 +28,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Debug APK (Bhavdip_Dev branch)
-        if: github.ref == 'refs/heads/Bhavdip_Dev'
+      - name: Build Debug APK (Bhavdip-Dev branch)
+        if: github.ref == 'refs/heads/Bhavdip-Dev'
         run: npx react-native run-android --variant=debug
 
       - name: Build Release APK (Production branch)
         if: github.ref == 'refs/heads/Production'
-        run: npx react-native run-android --variant=release
+        run: |
+          cd android
+          ./gradlew assembleRelease
 
       - name: Generate AAB (Deployment branch)
         if: github.ref == 'refs/heads/Deployment'
@@ -43,7 +45,7 @@ jobs:
           ./gradlew bundleRelease
 
       - name: Archive artifacts
-        if: github.ref == 'refs/heads/Bhavdip_dev' || github.ref == 'refs/heads/Production'
+        if: github.ref == 'refs/heads/Bhavdip-Dev' || github.ref == 'refs/heads/Production'
         uses: actions/upload-artifact@v2
         with:
           name: android-artifacts
