@@ -45,7 +45,9 @@ jobs:
 
       - name: Generate AAB (Deployment branch)
         if: github.ref == 'refs/heads/Deployment'
-        run: ./generate-aab.sh
+        run: |
+          chmod +x ./generate-aab.sh
+          ./generate-aab.sh
 
       - name: Archive AAB artifact
         if: github.ref == 'refs/heads/Bhavdip_Dev' || github.ref == 'refs/heads/Production' || github.ref == 'refs/heads/Deployment'
