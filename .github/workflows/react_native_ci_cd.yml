@@ -30,7 +30,9 @@ jobs:
 
       - name: Build Debug APK (Bhavdip_Dev branch)
         if: github.ref == 'refs/heads/Bhavdip_Dev'
-        run: npx react-native run-android --variant=debug
+        run: |
+          cd android
+          ./gradlew assembleDebug
 
       - name: Build Release APK (Production branch)
         if: github.ref == 'refs/heads/Production'
