@@ -3,7 +3,7 @@ name: React Native CI/CD
 on:
   push:
     branches:
-      - Bhavdip-Dev
+      - Bhavdip_Dev
       - Production
 
 jobs:
@@ -30,20 +30,27 @@ jobs:
 
       - name: Build Debug APK (Bhavdip_Dev branch)
         if: github.ref == 'refs/heads/Bhavdip_Dev'
-        run: npx react-native run-android --variant=debug
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug
 
       - name: Build Release APK (Production branch)
         if: github.ref == 'refs/heads/Production'
-        run: npx react-native run-android --variant=release
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleRelease
 
       - name: Generate AAB (Deployment branch)
         if: github.ref == 'refs/heads/Deployment'
         run: |
           cd android
+          chmod +x ./gradlew
           ./gradlew bundleRelease
 
       - name: Archive artifacts
-        if: github.ref == 'refs/heads/Bhavdip_dev' || github.ref == 'refs/heads/Production'
+        if: github.ref == 'refs/heads/Bhavdip_Dev' || github.ref == 'refs/heads/Production'
         uses: actions/upload-artifact@v2
         with:
           name: android-artifacts
